@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heap Sort Visualization</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        justify-content: flex-end;
+    }
+    h1{
+        display: block;
+        position: fixed;
+        bottom: 88vh;
+    }
+    #array-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+        max-height: 70vh; /* Adjust the maximum height of the array container */
+        flex-direction: row-reverse;
+    }
+    .array-bar {
+        width: 20px;
+        background-color: #1a28a1;
+        margin: 0 2px;
+        display: inline-block;
+        transition: transform 0.2s ease-in-out;
+        position: relative;
+    }
+    .bar-number {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateY(-50%);
+        font-size: 12px;
+    }
+    .sorted {
+        background-color: rgb(31, 25, 114);
+    }
+    #sortButton, #generateButton {
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<h1>Heap Sort Visualization</h1>
+<div id="array-container"></div>
+<button id="sortButton">Sort</button>
+<button id="generateButton">Generate Random Array</button>
+<script>
+    // Generate an array of random numbers
+    function generateArray(size, min, max) {
+        const array = [];
+        for (let i = 0; i < size; i++) {
+            array.push(Math.floor(Math.random() * (max - min + 1) + min));
+        }
+        return array;
+    }
+
+    // Function to visualize the array
+    function visualizeArray(array, sortedIndexes = []) {
+        const arrayContainer = document.getElementById("array-container");
+        arrayContainer.innerHTML = "";
+        for (let i = array.length - 1; i >= 0; i--) {
+            const barHeight = array[i] * 5;
+            const bar = document.createElement("div");
+            bar.classList.add("array-bar");
+            if (sortedIndexes.includes(i)) {
+                bar.classList.add("sorted");
+            }
+            bar.style.height = `${barHeight}px`;
+            const number = document.createElement("div");
+            number.classList.add("bar-number");
+            number.textContent = array[i];
+            bar.appendChild(number);
+            arrayContainer.appendChild(bar);
+        }
+    }
+
+    // Heapify function
+    async function heapify(array, n, i) {
+        let largest = i;
+        let left = 2 * i + 1;
+        let right = 2 * i + 2;
+
+        if (left < n && array[left] > array[largest]) {
+            largest = left;
+        }
+
+        if (right < n && array[right] > array[largest]) {
+            largest = right;
+        }
+
+        if (largest !== i) {
+            await swap(array, i, largest);
+            visualizeArray(array);
+            await sleep(200);
+            await heapify(array, n, largest);
+        }
+    }
+
+    // Heap sort function
+    async function heapSort(array) {
+        const n = array.length;
+
+        // Build heap (rearrange array)
+        for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+            await heapify(array, n, i);
+        }
+
+        // One by one extract an element from heap
+        for (let i = n - 1; i > 0; i--) {
+            // Move current root to end
+            await swap(array, 0, i);
+            visualizeArray(array);
+            await sleep(200);
+
+            // call max heapify on the reduced heap
+            await heapify(array, i, 0);
+        }
+    }
+
+    // Utility function for delaying execution
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Utility function to swap elements in an array
+    async function swap(array, i, j) {
+        const temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+    // Event listener for the sort button
+    document.getElementById("sortButton").addEventListener("click", async function() {
+        const arraySize = 20; // Change this to the desired size of the array
+        const array = generateArray(arraySize, 1, 100); // Change the range as needed
+        visualizeArray(array);
+        await heapSort(array);
+        visualizeArray(array, Array.from(Array(array.length).keys())); // Visualize the entire array as sorted
+    });
+
+    // Event listener for the generate button
+    document.getElementById("generateButton").addEventListener("click", function() {
+        const arraySize = 20; // Change this to the desired size of the array
+        const array = generateArray(arraySize, 1, 100); // Change the range as needed
+        visualizeArray(array);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SortVis - DSA Visualizer</title>
+    <style>
+        /* Resetting default margin and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-image: url(mainbg.jpg);
+            color: #f1e4e4;
+            overflow-x: hidden;
+        }
+
+        header {
+            background-color: #9b5f1bbe;
+            color: #fff;
+            padding: 0.5rem;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            padding-left: 20px;
+            font-family: monotype corsiva;
+            animation: slideInFromLeft 1s ease-in-out;
+            text-align: left;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: right;
+            padding-top: 0.5rem;
+            
+        }
+
+        nav ul li {
+            margin: 0 20px;
+            text-align: center;
+            animation: slideInFromLeft 1.2s ease-in-out;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.8rem;
+            transition: background-color 0.3s ease;
+            text-align: right;
+        }
+
+        nav ul li a:hover, nav ul li a:focus {
+            background-color: #412701;
+            border-radius: 5px;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            width: 100%;
+            background-color: #412701;
+            font-size: 14px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            text-align: center;
+        }
+
+        .dropdown-content a {
+            color: #fff;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #7e5517;
+            font-size: 14px;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .p{
+            margin-top: 15%;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: auto;
+            font-size: x-large;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 2rem 50px 100px;
+            margin-top: 80px;
+        }
+
+        .features h1, .get-started h1, .community h {
+            color: #fff;
+            text-shadow: 2px 7px 2px #918e8e;
+        }
+
+        .get-started {
+            background-color: rgba(233, 236, 239, 0.9);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .get-started button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .get-started button:hover {
+            background-color: #0056b3;
+        }
+
+        .community {
+            padding: 2rem;
+            text-align: center;
+            color: #fff;
+            text-shadow: 1px 2px 2px #000;
+        }
+
+        @keyframes slideInFromLeft {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        /* Style for modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: hidden; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #df8a8a;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            text-align: center;
+            width: 50%; /* Could be more or less, depending on screen size */
+            border-radius: 10px;
+            animation-name: animate-pop;
+            animation-timing-function: cubic-bezier(0.26, 0.53, 0.74, 1.48);
+            animation-duration: 0.9s;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+            transform: scale(1.2); /* Add a popping effect on hover */
+        }
+
+        @keyframes animate-pop {
+            0% {
+                opacity: 0;
+                transform: scale(0.8, 0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1,1);
+            }
+        }
+
+        /* Form styles */
+        .modal-content form input[type="text"],
+        .modal-content form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .modal-content form input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><u>SortVis - Sorting Algorithm Visualizer</u></h1>
+        <nav>
+            <ul>
+                <li><a href="SortVis.html"><u>Home</u></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn"><u>Sorting Algorithms</u></a>
+                    <div class="dropdown-content">
+                        <a href="bubble.html" onclick="selectAlgorithm('Bubble Sort')">Bubble Sort</a>
+                        <a href="insertion.html" onclick="selectAlgorithm('Insertion Sort')">Insertion Sort</a>
+                        <a href="selection.html" onclick="selectAlgorithm('Selection Sort')">Selection Sort</a>
+                        <a href="merge.html" onclick="selectAlgorithm('Merge Sort')">Merge Sort</a>
+                        <a href="quick.html" onclick="selectAlgorithm('Quick Sort')">Quick Sort</a>
+                        <a href="counting.html" onclick="selectAlgorithm('Counting Sort')">Counting Sort</a>
+                        <a href="heap.html" onclick="selectAlgorithm('Heap Sort')">Heap Sort</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn"><u>Data Structure</u></a>
+                    <div class="dropdown-content">
+                        <a href="rbtree.html" onclick="selectAlgorithm('Red Black Tree')">R-B Tree</a>
+                        <a href="avl.html" onclick="selectAlgorithm('AVL Tree')">AVL Tree</a>
+                        <a href="stack.html" onclick="selectAlgorithm('Array Implementation')">Array</a>
+                        <a href="LinkedList.html" onclick="selectAlgorithm('Linked List Implementation')">Linked List</a>
+                        <a href="linear.html" onclick="selectAlgorithm('Linear Search')">Linear Search</a>
+                        <a href="binary.html" onclick="selectAlgorithm('Binary Search')">Binary Search</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn"><u>Puzzles/Games</u></a>
+                    <div class="dropdown-content">
+                        <a href="Path.html" onclick="selectAlgorithm('Path Finder')">Path Finder</a>
+                        <a href="astar.html" onclick="selectAlgorithm('A Star')">A Star</a>
+                <li><a href="#"><u>About</u></a></li>
+                <li><a href="#"><u>Contact</u></a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="p"><b>SortVis</b> are used to sort a data structure according to a specific order relationship, such as numerical order or lexicographical order.
+
+        This operation is one of the most important and widespread in computer science. For a long time, new methods have been developed to make this procedure faster and faster.
+        
+        There are currently hundreds of different sorting algorithms, each with its own specific characteristics. They are classified according to two metrics: space complexity and time complexity.
+        
+        Those two kinds of complexity are represented with asymptotic notations, mainly with the symbols O, Θ, Ω, representing respectively the upper bound, the tight bound, and the lower bound of the algorithm's complexity, specifying in brackets an expression in terms of n, the number of the elements of the data structure.</div>
+
+    <section class="features">
+        <h1>Why SortVis?</h1>
+        <div class="feature">
+            <h3>Visual Learning</h3>
+            <p>Witness sorting algorithms in action through intuitive visualizations. Help learners visualize the data being sorted</p>
+        </div>
+        <div class="feature">
+            <h3>Interactive Experience</h3>
+            <p>Dive into the world of sorting algorithms with hands-on exploration.</p>
+        </div>
+        <div class="feature">
+            <h3>Educational Resource</h3>
+            <p>SortVis offers a comprehensive educational resource suitable for all levels. They provide a hands-on experience for students to see how different sorting algo work. </p>
+        </div>
+        <div class="feature">
+            <h3>Developer-Friendly</h3>
+            <p>Accessible for developers looking to implement sorting algorithms in their projects. Well-documented codebase with clear explanations</p>
+        </div>
+        <div class="feature">
+            <h3>Performance Optimization</h3>
+            <p>Efforts may be made to optimize performance for smoother visualization, especially with larger datasets or complex algorithms.</p>
+        </div>
+    </section>
+
+    <section class="community">
+        <h2>Join Our Community</h2>
+        <p>Connect with fellow learners, share insights, and stay updated with the latest developments in sorting algorithms.</p>
+        <button id="joinNowBtn">Join Now</button>
+    </section>
+
+    <footer>
+        <p>© 2024 SortVis. All rights reserved.</p>
+        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+    </footer>
+
+    <!-- Modal for registration form -->
+    <div id="registrationModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Registration Form</h2>
+        <form id="registrationForm" onsubmit="return validateForm()">
+            <input type="text" id="username" placeholder="Username" aria-label="." required required>
+            <div class="error" id="usernameError"></div>
+            <input type="text" id="email" placeholder="Email" aria-label="." required>
+            <div class="error" id="emailError"></div>
+            <input type="text" id="countryCode" placeholder="Country Code" aria-label="." required>
+            <div class="error" id="countryCodeError"></div>
+            <input type="text" id="mobileNumber" placeholder="Mobile Number" aria-label="." required>
+            <div class="error" id="mobileError"></div>
+            <input type="password" id="password" placeholder="Password" aria-label="." required>
+            <div class="error" id="passwordError"></div>
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" aria-label="." required>
+            <div class="error" id="confirmPasswordError"></div>
+            <input type="submit" value="Register" aria-label="." required>
+        </form>
+      </div>
+    </div>
+
+    <script>
+        // JavaScript to handle modal functionality
+        var modal = document.getElementById("registrationModal");
+        var btn = document.getElementById("joinNowBtn");
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+          modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+          modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
+
+        // Function to handle selecting algorithms
+        function selectAlgorithm(algorithmName) {
+            alert("Algorithm selected: " + algorithmName);
+        }
+        // Form validation logic
+        function validateForm() {
+            var username = document.getElementById('username').value.trim();
+            var email = document.getElementById('email').value.trim();
+            var countryCode = document.getElementById('countryCode').value.trim();
+            var mobileNumber = document.getElementById('mobileNumber').value.trim();
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+
+            var usernameError = document.getElementById('usernameError');
+            var emailError = document.getElementById('emailError');
+            var mobileError = document.getElementById('mobileError');
+            var passwordError = document.getElementById('passwordError');
+            var confirmPasswordError = document.getElementById('confirmPasswordError');
+
+            // Reset errors
+            usernameError.textContent = '';
+            emailError.textContent = '';
+            mobileError.textContent = '';
+            passwordError.textContent = '';
+            confirmPasswordError.textContent = '';
+
+            var isValid = true;
+
+            // Validate username
+            if (username === '') {
+                usernameError.textContent = 'Username is required';
+                isValid = false;
+            }
+
+            // Validate email
+            if (email === '') {
+                emailError.textContent = 'Email is required';
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                emailError.textContent = 'Invalid email format';
+                isValid = false;
+            }
+
+            // Validate mobile number
+            if (countryCode === '') {
+                mobileError.textContent = 'Country code is required';
+                isValid = false;
+            } else if (mobileNumber === '') {
+                mobileError.textContent = 'Mobile number is required';
+                isValid = false;
+            } else if (!/^\d+$/.test(mobileNumber)) {
+                mobileError.textContent = 'Mobile number must contain only digits';
+                isValid = false;
+            }
+
+            // Validate password
+            if (password === '') {
+                passwordError.textContent = 'Password is required';
+                isValid = false;
+            } else if (password.length < 8) {
+                passwordError.textContent = 'Password must be at least 8 characters long';
+                isValid = false;
+            } else if (!password.match(/[a-z]/) || !password.match(/[A-Z]/)) {
+                passwordError.textContent = 'Password must contain both lowercase and uppercase letters';
+                isValid = false;
+            }
+
+            // Validate confirm password
+            if (confirmPassword === '') {
+                confirmPasswordError.textContent = 'Please confirm your password';
+                isValid = false;
+            } else if (confirmPassword !== password) {
+                confirmPasswordError.textContent = 'Passwords do not match';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Function to reset form data
+    function resetForm() {
+        document.getElementById("registrationForm").reset();
+    }
+
+    // Call resetForm function when the page is loaded
+    window.onload = function() {
+        resetForm();
+    };
+
+        // Function to validate email format
+        function validateEmail(email) {
+            var re = /\S+@\S+\.\S+/;
+            return re.test(email);
+        }
+    </script>
+</body>
+</html>

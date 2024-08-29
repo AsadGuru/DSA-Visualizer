@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Counting Sort Visualization</title>
+  <style>
+    .container {
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    .input-container {
+      margin-bottom: 20px;
+    }
+
+    .array-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .array-item {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      background-color: dodgerblue;
+      color: white;
+      margin: 0 5px;
+      line-height: 30px;
+      transition: all 0.5s ease-in-out; /* Animation transition */
+    }
+
+    .active {
+      background-color: #ffaa00 !important;
+    }
+
+    .swapping {
+      background-color: #ff0000 !important;
+    }
+
+    .sorted {
+      background-color: green !important;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: dodgerblue;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #007acc;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="input-container">
+      <label for="arraySize">Array Size:</label>
+      <input type="number" id="arraySize" min="1" value="10">
+      <label for="minValue">Min Value:</label>
+      <input type="number" id="minValue" min="0" value="0">
+      <label for="maxValue">Max Value:</label>
+      <input type="number" id="maxValue" min="1" value="10">
+      <button onclick="generateArray()">Generate Array</button>
+    </div>
+    <div class="array-container">
+      <div id="unsortedArray" class="array-container"></div>
+      <div id="sortedArray" class="array-container"></div>
+    </div>
+    <button onclick="sortArray()">Sort Array</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <h2>Sorting Completed</h2>
+      <p>The array has been sorted successfully.</p>
+      <button onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    function generateArray() {
+      const arraySize = parseInt(document.getElementById("arraySize").value);
+      const minValue = parseInt(document.getElementById("minValue").value);
+      const maxValue = parseInt(document.getElementById("maxValue").value);
+      const unsortedArrayContainer = document.getElementById("unsortedArray");
+      const sortedArrayContainer = document.getElementById("sortedArray");
+
+      unsortedArrayContainer.innerHTML = "";
+      sortedArrayContainer.innerHTML = "";
+
+      for (let i = 0; i < arraySize; i++) {
+        const value = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+        const unsortedArrayItem = document.createElement("div");
+        const sortedArrayItem = document.createElement("div");
+
+        unsortedArrayItem.classList.add("array-item");
+        unsortedArrayItem.textContent = value;
+        unsortedArrayContainer.appendChild(unsortedArrayItem);
+
+        sortedArrayItem.classList.add("array-item");
+        sortedArrayItem.textContent = "-";
+        sortedArrayContainer.appendChild(sortedArrayItem);
+      }
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function sortArray() {
+      const unsortedArrayItems = document.querySelectorAll("#unsortedArray .array-item");
+      const sortedArrayItems = document.querySelectorAll("#sortedArray .array-item");
+      const count = [];
+
+      unsortedArrayItems.forEach(item => {
+        const value = parseInt(item.textContent);
+        count[value] = (count[value] || 0) + 1;
+      });
+
+      let index = 0;
+
+      for (let value = 0; value < count.length; value++) {
+        for (let i = 0; i < (count[value] || 0); i++) {
+          await sleep(500); // Adjust speed here (in milliseconds)
+          unsortedArrayItems[index].classList.add('active');
+          await sleep(500); // Highlight time
+          sortedArrayItems[index].textContent = value;
+          sortedArrayItems[index].classList.add('sorted');
+          await sleep(500); // Highlight time
+          unsortedArrayItems[index].classList.remove('active');
+          index++;
+        }
+      }
+
+      // Show modal when sorting is completed
+      document.getElementById("myModal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("myModal").style.display = "none";
+    }
+  </script>
+</body>
+</html>

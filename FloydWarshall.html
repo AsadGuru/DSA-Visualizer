@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Floyd-Warshall Algorithm</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    #container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #output {
+      margin-top: 20px;
+    }
+
+    svg {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>Floyd-Warshall Algorithm</h1>
+    <div>
+      <label for="numVertices">Number of Vertices:</label>
+      <input type="number" id="numVertices">
+    </div>
+    <button onclick="generateGraph()">Generate Graph</button>
+    <svg id="graph" width="400" height="400"></svg>
+    <div id="output"></div>
+  </div>
+  <script>
+    function floydWarshall(graph) {
+      let dist = [];
+      const numVertices = graph.length;
+
+      // Initialize distance matrix
+      for (let i = 0; i < numVertices; i++) {
+        dist[i] = [];
+        for (let j = 0; j < numVertices; j++) {
+          if (i === j) {
+            dist[i][j] = 0;
+          } else if (graph[i][j] !== undefined) {
+            dist[i][j] = graph[i][j];
+          } else {
+            dist[i][j] = Infinity;
+          }
+        }
+      }
+
+      // Floyd-Warshall algorithm
+      for (let k = 0; k < numVertices; k++) {
+        for (let i = 0; i < numVertices; i++) {
+          for (let j = 0; j < numVertices; j++) {
+            if (dist[i][k] + dist[k][j] < dist[i][j]) {
+              dist[i][j] = dist[i][k] + dist[k][j];
+            }
+          }
+        }
+      }
+
+      return dist;
+    }
+
+    function generateGraph() {
+      const numVerticesInput = document.getElementById('numVertices');
+      const numVertices = parseInt(numVerticesInput.value);
+
+      if (numVertices <= 0) {
+        alert("Please enter a valid number of vertices.");
+        return;
+      }
+
+      const graph = [];
+
+      // Generate random graph
+      for (let i = 0; i < numVertices; i++) {
+        graph[i] = [];
+        for (let j = 0; j < numVertices; j++) {
+          if (i === j) {
+            graph[i][j] = 0;
+          } else {
+            graph[i][j] = Math.random() < 0.5 ? Math.floor(Math.random() * 10) + 1 : undefined;
+          }
+        }
+      }
+
+      // Draw graph
+      drawGraph(graph);
+
+      // Calculate shortest paths
+      const shortestPaths = floydWarshall(graph);
+
+      // Output the result
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = '<h2>Shortest Paths:</h2>';
+      for (let i = 0; i < shortestPaths.length; i++) {
+        for (let j = 0; j < shortestPaths[i].length; j++) {
+          outputDiv.innerHTML += `<p>Shortest path from node ${i+1} to node ${j+1} is ${shortestPaths[i][j]}</p>`;
+        }
+      }
+    }
+
+    function drawGraph(graph) {
+      const svg = document.getElementById('graph');
+      svg.innerHTML = ''; // Clear previous drawings
+
+      const numVertices = graph.length;
+      const radius = 150;
+      const cx = 200;
+      const cy = 200;
+      const textOffset = 10; // Offset for placing text outside the circle
+      const edgeTextOffset = 20; // Offset for placing text outside the edges
+
+      // Draw nodes with numbers
+      for (let i = 0; i < numVertices; i++) {
+        const angle = (i / numVertices) * Math.PI * 2;
+        const x = cx + radius * Math.cos(angle);
+        const y = cy + radius * Math.sin(angle);
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', 9);
+        circle.setAttribute('fill', 'burlywood');
+        svg.appendChild(circle);
+
+        // Add text with node number
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x);
+        text.setAttribute('y', y + 4); // Adjust vertical position
+        text.setAttribute('text-align', 'end');
+        text.setAttribute('font-size', '15px');
+        text.textContent = i + 1;
+        svg.appendChild(text);
+      }
+
+      // Draw edges
+      for (let i = 0; i < numVertices; i++) {
+        for (let j = 0; j < numVertices; j++) {
+          if (graph[i][j] !== undefined && graph[i][j] !== 0) {
+            const startX = cx + radius * Math.cos((i / numVertices) * Math.PI * 2);
+            const startY = cy + radius * Math.sin((i / numVertices) * Math.PI * 2);
+            const endX = cx + radius * Math.cos((j / numVertices) * Math.PI * 2);
+            const endY = cy + radius * Math.sin((j / numVertices) * Math.PI * 2);
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', startX);
+            line.setAttribute('y1', startY);
+            line.setAttribute('x2', endX);
+            line.setAttribute('y2', endY);
+            line.setAttribute('stroke', 'black');
+            line.setAttribute('stroke-width', 2);
+            svg.appendChild(line);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

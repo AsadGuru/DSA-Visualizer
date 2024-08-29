@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Sort Visualization with Random Bars</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        text-align: center;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .array-box {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        height: 400px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        overflow-x: auto;
+        position: relative;
+    }
+
+    .bar {
+        position: relative;
+        width: 20px;
+        margin: 0 2px;
+        background-color: #007bff;
+        transition: height 0.3s ease;
+    }
+
+    .value-text {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        color: #333;
+    }
+
+    .pivot {
+        background-color: #ffc107 !important;
+        font-size: 10px;
+    }
+
+    .highlighted {
+        background-color: #28a745 !important;
+    }
+
+    .button-container {
+        margin-top: 20px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Quick Sort Visualization with Random Bars</h1>
+    <div class="array-box" id="array-box"></div>
+    <div class="button-container">
+        <button onclick="generateRandomArray()">Generate Random Array</button>
+        <button onclick="startSorting()">Start Sorting</button>
+    </div>
+</div>
+
+<script>
+    let array = [];
+    let speed = 1000;
+
+    // Function to swap two elements in an array
+    function swap(arr, i, j) {
+        let temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    // Function to partition the array and return the pivot index
+    function partition(arr, low, high) {
+        let pivot = arr[high];
+        let i = low - 1;
+
+        for (let j = low; j < high; j++) {
+            if (arr[j] < pivot) {
+                i++;
+                swap(arr, i, j);
+            }
+        }
+        swap(arr, i + 1, high);
+        return i + 1;
+    }
+
+    // Function to perform quicksort
+    async function quickSort(arr, low, high) {
+        if (low < high) {
+            let pi = await partition(arr, low, high);
+
+            // Visualization
+            await displayArray(arr, pi);
+
+            await Promise.all([
+                quickSort(arr, low, pi - 1),
+                quickSort(arr, pi + 1, high)
+            ]);
+        }
+    }
+
+    // Function to display the array as bars
+    function displayArray(arr, pivotIndex = -1) {
+        return new Promise(resolve => {
+            const arrayBox = document.getElementById('array-box');
+            arrayBox.innerHTML = '';
+
+            arr.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.style.height = `${value * 5}px`;
+
+                const valueText = document.createElement('div');
+                valueText.classList.add('value-text');
+                valueText.textContent = value;
+                bar.appendChild(valueText);
+
+                if (index === pivotIndex) {
+                    const pivotValue = document.createElement('div');
+                    pivotValue.classList.add('pivot');
+                    pivotValue.textContent = 'P';
+                    bar.appendChild(pivotValue);
+                } else if (index > pivotIndex) {
+                    bar.classList.add('highlighted');
+                }
+                arrayBox.appendChild(bar);
+            });
+
+            setTimeout(resolve, speed); // Delay added for visualization
+        });
+    }
+
+    // Function to generate an array of random numbers
+    function generateRandomArray() {
+        const minNumber = 1;
+        const maxNumber = 50;
+        const length = 20;
+        array = [];
+        for (let i = 0; i < length; i++) {
+            array.push(Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber);
+        }
+        displayArray(array);
+    }
+
+    // Function to start sorting
+    function startSorting() {
+        const low = 0;
+        const high = array.length - 1;
+        quickSort(array, low, high);
+    }
+</script>
+</body>
+</html>

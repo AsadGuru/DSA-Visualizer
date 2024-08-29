@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linked List Visualization</title>
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      animation-name: modalopen;
+      animation-duration: 0.4s;
+    }
+
+    @keyframes modalopen {
+      from {opacity: 1}
+      to {opacity: 1}
+    }
+
+    /* Close button style */
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    input[type="number"], button {
+      padding: 10px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #3498db;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    input[type="number"]:focus, button:focus {
+      outline: none;
+    }
+
+    input[type="number"]:hover, button:hover {
+      background-color: #2980b9;
+    }
+
+    .linked-list {
+      margin-top: 20px;
+    }
+
+    .node {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      background-color: #3498db;
+      color: white;
+      text-align: center;
+      line-height: 50px;
+      margin-right: 10px;
+    }
+
+    .arrow {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background-color: transparent;
+      border-top: 2px solid #000;
+      border-right: 2px solid #000;
+      transform: rotate(45deg);
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Linked List</h2>
+      <p>A linked list is a linear data structure consisting of a sequence of elements. Each element points to the next element in the sequence, forming a chain. The last element points to null, indicating the end of the list.</p>
+      <p>A linked list is a linear data structure which can store a collection of "nodes" connected together via links i.e. pointers. Linked lists nodes are not stored at a contiguous location, rather they are linked using pointers to the different memory locations. A node consists of the data value and a pointer to the address of the next node within the linked list.  
+        <p>It is a dynamic linear data structure whose memory size can be allocated or de-allocated at run time based on the operation insertion or deletion, this helps in using system memory efficiently. Linked lists can be used to implment various data structures like a stack, queue, graph, hash maps, etc.
+        Linked Lists.</p>
+       <p>It starts with a head node which points to the first node. Every node consists of data which holds the actual data (value) associated with the node and a next pointer which holds the memory address of the next node in the linked list. The last node is called the tail node in the list which points to null indicating the end of the list.</p>
+      <p>In this visualization, you can insert numbers at the beginning, end, or in the middle of the linked list. You can also delete numbers from the list.</p>
+    </div>
+  </div>
+  <div class="container">
+    <h1>Linked List Visualization</h1>
+    <div>
+      <label for="insert-number">Insert Number:</label>
+      <input type="number" id="insert-number">
+      <button onclick="insertNumber()">Insert</button>
+    </div>
+    <div>
+      <label for="delete-number">Delete Number:</label>
+      <input type="number" id="delete-number">
+      <button onclick="deleteNumber()">Delete</button>
+    </div>
+    <div class="linked-list" id="linked-list"></div>
+  </div>
+  <script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("myBtn");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the page loads, open the modal
+    window.onload = function() {
+      modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    class Node {
+      constructor(value) {
+        this.value = value;
+        this.next = null;
+      }
+    }
+
+    class LinkedList {
+      constructor() {
+        this.head = null;
+      }
+
+      append(value) {
+        const newNode = new Node(value);
+        if (!this.head) {
+          this.head = newNode;
+          return;
+        }
+
+        let current = this.head;
+        while (current.next) {
+          current = current.next;
+        }
+        current.next = newNode;
+      }
+
+      insertAtBeginning(value) {
+        const newNode = new Node(value);
+        newNode.next = this.head;
+        this.head = newNode;
+      }
+
+      insertAfter(target, value) {
+        const newNode = new Node(value);
+        let current = this.head;
+        while (current) {
+          if (current.value === target) {
+            newNode.next = current.next;
+            current.next = newNode;
+            break;
+          }
+          current = current.next;
+        }
+      }
+
+      insertBefore(target, value) {
+        const newNode = new Node(value);
+        if (this.head.value === target) {
+          newNode.next = this.head;
+          this.head = newNode;
+          return;
+        }
+
+        let prev = null;
+        let current = this.head;
+        while (current && current.value !== target) {
+          prev = current;
+          current = current.next;
+        }
+
+        if (current) {
+          prev.next = newNode;
+          newNode.next = current;
+        }
+      }
+
+      delete(value) {
+        if (!this.head) {
+          return;
+        }
+
+        if (this.head.value === value) {
+          this.head = this.head.next;
+          return;
+        }
+
+        let prev = null;
+        let current = this.head;
+        while (current && current.value !== value) {
+          prev = current;
+          current = current.next;
+        }
+
+        if (current) {
+          prev.next = current.next;
+        }
+      }
+    }
+
+    function createLinkedList(numNodes) {
+      const linkedList = new LinkedList();
+      for (let i = 0; i < numNodes; i++) {
+        linkedList.append(Math.floor(Math.random() * 100)); // Generate random numbers between 0 and 99
+      }
+      return linkedList;
+    }
+
+    function displayLinkedList(linkedList) {
+      const linkedListContainer = document.getElementById('linked-list');
+      linkedListContainer.innerHTML = ''; // Clear previous content
+
+      let current = linkedList.head;
+      while (current) {
+        const nodeElement = document.createElement('div');
+        nodeElement.classList.add('node');
+        nodeElement.textContent = current.value;
+        linkedListContainer.appendChild(nodeElement);
+
+        if (current.next) {
+          const arrowElement = document.createElement('div');
+          arrowElement.classList.add('arrow');
+          linkedListContainer.appendChild(arrowElement);
+        }
+
+        current = current.next;
+      }
+    }
+
+    let linkedList = createLinkedList(5);
+    displayLinkedList(linkedList);
+
+    function insertNumber() {
+      const insertNumberInput = document.getElementById('insert-number');
+      const number = parseInt(insertNumberInput.value);
+      if (!isNaN(number)) {
+        const positionChoice = prompt("Where do you want to place the number?\n1. At the beginning\n2. At the end\n3. In the middle");
+        if (positionChoice === "1") {
+          linkedList.insertAtBeginning(number);
+        } else if (positionChoice === "2") {
+          linkedList.append(number);
+        } else if (positionChoice === "3") {
+          const middlePositionChoice = prompt("Where in the middle do you want to place the number?\n1. Before a specific number\n2. After a specific number");
+          if (middlePositionChoice === "1") {
+            const beforeNumber = parseInt(prompt("Enter the number before which you want to place the new number:"));
+            linkedList.insertAfter(beforeNumber, number);
+          } else if (middlePositionChoice === "2") {
+            const afterNumber = parseInt(prompt("Enter the number after which you want to place the new number:"));
+            linkedList.insertBefore(afterNumber, number);
+          } else {
+            alert("Invalid choice!");
+            return;
+          }
+        } else {
+          alert("Invalid choice!");
+          return;
+        }
+        displayLinkedList(linkedList);
+        insertNumberInput.value = '';
+      }
+    }
+
+    function deleteNumber() {
+      const deleteNumberInput = document.getElementById('delete-number');
+      const number = parseInt(deleteNumberInput.value);
+      if (!isNaN(number)) {
+        linkedList.delete(number);
+        displayLinkedList(linkedList);
+        deleteNumberInput.value = '';
+      }
+    }
+  </script>
+</body>
+</html>

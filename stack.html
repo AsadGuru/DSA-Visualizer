@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stack Visualization</title>
+<style>
+  body {
+    font-family: monotype corsiva;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.295);
+  }
+  #stack-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 300px;
+  }
+  .stack {
+    width: 150px;
+    height: 30px;
+    background-color: #000000;
+    color: rgb(248, 245, 241);
+    border-radius: 15px 0px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+  }
+  #stack {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  #stack div {
+    margin-bottom: 5px;
+  }
+  button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+<body>
+<h1>Stack : Array Implementaion</h1>
+<div id="stack-container">
+  <div id="stack"></div>
+</div>
+<button onclick="pushElement()">Push</button>
+<button onclick="popElement()">Pop</button>
+
+<script>
+let stack = [];
+
+function updateStackVisualization() {
+  const stackDiv = document.getElementById('stack');
+  stackDiv.innerHTML = '';
+  for (let i = stack.length - 1; i >= 0; i--) {
+    const stackItem = document.createElement('div');
+    stackItem.classList.add('stack');
+    stackItem.textContent = stack[i];
+    stackDiv.appendChild(stackItem);
+  }
+}
+
+function pushElement() {
+  const element = prompt('Enter element to push:');
+  if (element !== null && element !== '') {
+    stack.push(element);
+    updateStackVisualization();
+  }
+}
+
+function popElement() {
+  if (stack.length === 0) {
+    alert('Stack is empty');
+  } else {
+    stack.pop();
+    updateStackVisualization();
+  }
+}
+</script>
+</body>
+</html>

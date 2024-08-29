@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>A* Algorithm</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+    <script src="./astar.js"></script>
+    <link rel="stylesheet" href="./astar.css">
+</head>
+<body>
+    <table id="maze">
+        <tr id="0"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"></tr>
+        <tr id="1"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"></tr>
+        <tr id="2"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"></tr>
+        <tr id="3"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"></tr>
+        <tr id="4"><td Class="Start">Begin</td><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Stop">Ending</td></tr>
+        <tr id="5"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"></tr>
+        <tr id="6"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"></tr>
+        <tr id="7"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"></tr>
+        <tr id="8"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"><td Class="Road"></tr>
+    </table>
+    <div>
+        <button id="btnStart">Start</button>
+        <button id="btnPathreset">Reset Path</button>
+        <button id="btnReset">Full Reset</button>
+        <!-- <span> tab = wall // 2 tabs = road </span> -->
+    </div>
+</body>
+</html>

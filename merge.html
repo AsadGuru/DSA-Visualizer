@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merge Sort Visualization</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+        justify-content: flex-end;
+    }
+    #array-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px; /* Adjust margin-top as needed */
+        max-height: 70vh; /* Adjust max-height as needed */
+        flex-direction: row-reverse;
+    }
+    .array-bar {
+        width: 20px;
+        background-color: #143457;
+        margin: 0 2px;
+        display: inline-block;
+        transition: transform 0.2s ease-in-out;
+        position: relative;
+    }
+    .bar-number {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+    }
+    .sorted {
+        background-color: green;
+    }
+    #sortButton, #generateButton {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+<h1>Merge Sort Visualization</h1>
+<div id="array-container"></div>
+<button id="sortButton">Sort</button>
+<button id="generateButton">Generate Random Array</button>
+<script>
+    // Generate an array of random numbers
+    function generateArray(size, min, max) {
+        const array = [];
+        for (let i = 0; i < size; i++) {
+            array.push(Math.floor(Math.random() * (max - min + 1) + min));
+        }
+        return array;
+    }
+
+    // Function to visualize the array
+    function visualizeArray(array, sortedIndexes = []) {
+        const arrayContainer = document.getElementById("array-container");
+        arrayContainer.innerHTML = "";
+        for (let i = array.length - 1; i >= 0; i--) {
+            const barHeight = array[i] * 5;
+            const bar = document.createElement("div");
+            bar.classList.add("array-bar");
+            if (sortedIndexes.includes(i)) {
+                bar.classList.add("sorted");
+            }
+            bar.style.height = `${barHeight}px`;
+            const number = document.createElement("div");
+            number.classList.add("bar-number");
+            number.textContent = array[i];
+            bar.appendChild(number);
+            arrayContainer.appendChild(bar);
+        }
+    }
+
+    // Merge Sort Algorithm
+    async function mergeSort(array, left, right) {
+        if (left >= right) {
+            return;
+        }
+        const mid = Math.floor((left + right) / 2);
+        await mergeSort(array, left, mid);
+        await mergeSort(array, mid + 1, right);
+        await merge(array, left, mid, right);
+    }
+
+    // Merge function
+    async function merge(array, left, mid, right) {
+        const tempArray = [];
+        let i = left;
+        let j = mid + 1;
+        let k = 0;
+
+        while (i <= mid && j <= right) {
+            if (array[i] <= array[j]) {
+                tempArray[k++] = array[i++];
+            } else {
+                tempArray[k++] = array[j++];
+            }
+        }
+
+        while (i <= mid) {
+            tempArray[k++] = array[i++];
+        }
+
+        while (j <= right) {
+            tempArray[k++] = array[j++];
+        }
+
+        for (i = left, k = 0; i <= right; i++, k++) {
+            array[i] = tempArray[k];
+            visualizeArray(array, [i]);
+            await sleep(100);
+        }
+    }
+
+    // Utility function for delaying execution
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Event listener for the sort button
+    document.getElementById("sortButton").addEventListener("click", async function() {
+        const arraySize = 20; // Change this to the desired size of the array
+        const array = generateArray(arraySize, 1, 100); // Change the range as needed
+        visualizeArray(array);
+        await mergeSort(array, 0, array.length - 1);
+        visualizeArray(array, Array.from(Array(array.length).keys())); // Visualize the entire array as sorted
+    });
+
+    // Event listener for the generate button
+    document.getElementById("generateButton").addEventListener("click", function() {
+        const arraySize = 20; // Change this to the desired size of the array
+        const array = generateArray(arraySize, 1, 100); // Change the range as needed
+        visualizeArray(array);
+    });
+</script>
+</body>
+</html>

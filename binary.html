@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Search Visualization</title>
+<style>
+  .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #e7dede;
+      margin: 5% auto;
+      padding: 80px;
+      border: 1px solid #888;
+      width: 80%;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      animation-name: modalopen;
+      animation-duration: 0.4s;
+    }
+
+    @keyframes modalopen {
+      from {opacity: 1}
+      to {opacity: 1}
+    }
+
+    /* Close button style */
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  h1 {
+    margin-top: 30px;
+  }
+  button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  #container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .array-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .array {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .number {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 3px;
+  }
+  .highlighted {
+    background-color: #ffc107; /* Yellow */
+    color: #333;
+  }
+  .found {
+    background-color: #28a745; /* Green */
+    color: #fff;
+  }
+  .not-found {
+    background-color: #dc3545; /* Red */
+    color: #fff;
+  }
+  .popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+  .popup-content {
+    background-color: #fff;
+    width: 300px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+</head>
+<body>
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Binary Search</h2>
+      <p>Binary Search is a type of searching algorithm. A searching algorithm means you find an item with a particular value in a sorted sequence. Binary search is a type of searching algorithm which finds an item by repeatedly halving the search space.</p><br>
+      <p><b>Binary Search: Steps on how it works:</b>
+
+        <p>To find the index of element e with a certain value:</p>
+        
+            <p>1-: Start with an array sorted in descending order.</p>
+            <p>2-: In each step: Pick the middle element of the array m and compare it to e. If element values are equal, then return index of m. If e is greater than m, then e must be in left subarray. If m is greater than e, then e must be in the right subarray.</p>
+            <p>3-: Repeat those steps on new subarray.</p><br>
+    </div>
+  </div>
+<h1>Binary Search Visualization</h1>
+<div>
+  <label for="searchValue">Search Value:</label>
+  <input type="number" id="searchValue" min="1" value="50">
+  <button onclick="startSearch()">Start Search</button>
+  <button onclick="generateNewArray()">Generate Random Array</button>
+</div>
+<div class="array-box">
+  <div id="container" class="array"></div>
+</div>
+
+<div id="finishPopup" class="popup">
+  <div class="popup-content">
+    <h2>Search Completed</h2>
+    <p id="searchResult"></p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+</div>
+
+<script>
+  // Get the modal
+  var modal = document.getElementById("myModal");
+
+  // Get the button that opens the modal
+  var btn = document.getElementById("myBtn");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the page loads, open the modal
+  window.onload = function() {
+    modal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+  let currentArray = [];
+
+  // Function to generate random sorted array
+  function generateSortedArray(size, min, max) {
+    let arr = [];
+    for (let i = 0; i < size; i++) {
+      arr.push(Math.floor(Math.random() * (max - min + 1) + min));
+    }
+    return arr.sort((a, b) => a - b);
+  }
+
+  // Function to visualize array
+  function visualizeArray(array, highlightIndex = null, foundIndex = null) {
+    const container = document.getElementById('container');
+    container.innerHTML = '';
+    array.forEach((value, index) => {
+      const number = document.createElement('div');
+      number.classList.add('number');
+      number.textContent = value;
+      if (index === highlightIndex) {
+        number.classList.add('highlighted');
+      }
+      if (index === foundIndex) {
+        number.classList.add('found');
+      }
+      container.appendChild(number);
+    });
+  }
+
+  // Binary Search Algorithm
+  async function binarySearch(array, target) {
+    let low = 0;
+    let high = array.length - 1;
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      visualizeArray(array, mid);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      if (array[mid] === target) {
+        visualizeArray(array, null, mid);
+        displayFinishPopup(`Element ${target} found at index ${mid}.`);
+        return; // Element found
+      } else if (array[mid] < target) {
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+    visualizeArray(array);
+    displayFinishPopup(`Element ${target} not found.`);
+  }
+
+  // Start search when button is clicked
+  function startSearch() {
+    const searchValue = parseInt(document.getElementById('searchValue').value);
+    binarySearch(currentArray, searchValue);
+  }
+
+  // Generate new random array when button is clicked
+  function generateNewArray() {
+    currentArray = generateSortedArray(15, 1, 100); // Generate a sorted array of size 15
+    visualizeArray(currentArray);
+    document.getElementById('finishPopup').style.display = 'none'; // Hide finish popup
+  }
+
+  // Display finish popup
+  function displayFinishPopup(message) {
+    document.getElementById('searchResult').textContent = message;
+    document.getElementById('finishPopup').style.display = 'block';
+  }
+
+  // Close popup
+  function closePopup() {
+    document.getElementById('finishPopup').style.display = 'none';
+  }
+</script>
+</body>
+</html>

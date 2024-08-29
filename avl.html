@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVL Tree Visualization</title>
+<style>
+  .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #e7dede;
+      margin: 5% auto;
+      padding: 80px;
+      border: 1px solid #888;
+      width: 80%;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      animation-name: modalopen;
+      animation-duration: 0.4s;
+    }
+
+    @keyframes modalopen {
+      from {opacity: 1}
+      to {opacity: 1}
+    }
+
+    /* Close button style */
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    body{
+        text-align: center;
+        font-style: italic;
+        background-color: burlywood;
+    }
+    #app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#canvas {
+  border: 1px solid black;
+}
+
+#controls {
+  margin-top: 20px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>AVL Trees</h2>
+      <p>AVL trees, the difference between the heights of left and right subtrees, known as the Balance Factor, must be at most one. Once the difference exceeds one, the tree automatically executes the balancing algorithm until the difference becomes one again.</p><br>
+      <p>There are usually four cases of rotation in the balancing algorithm of AVL trees: <b>LL, RR, LR, RL</b>.</p><br>
+      <p><b>LL rotation</b>  is performed when the node is inserted into the right subtree leading to an unbalanced tree.The node where the unbalance occurs becomes the left child and the newly added node becomes the right child with the middle node as the parent node.</p><br>
+      <p><b>RR rotation</b>  is performed when the node is inserted into the left subtree leading to an unbalanced tree.The node where the unbalance occurs becomes the right child and the newly added node becomes the left child with the middle node as the parent node.</p><br>
+      <p><b>LR rotation</b>  is performed when a node is inserted into the right subtree of the left subtree. The LR rotation is a combination of the left rotation followed by the right rotation.</p><br>
+      <p><b>RL rotation</b> is also the extended version of the previous single rotations, hence it is called a double rotation and it is performed if a node is inserted into the left subtree of the right subtree. The RL rotation is a combination of the right rotation followed by the left rotation.</p>
+    </div>
+  </div>
+    <h1>AVL Tree Visualization</h1>
+<div id="app">
+  <canvas id="canvas" width="700" height="600"></canvas>
+  <div id="controls">
+    <input type="number" id="nodeValue" placeholder="Node Value" aria-label=".">
+    <button onclick="insertNode()">Insert Node</button>
+    <button onclick="reset()">Reset Tree</button>
+  </div>
+</div>
+<script>
+  // Get the modal
+  var modal = document.getElementById("myModal");
+
+  // Get the button that opens the modal
+  var btn = document.getElementById("myBtn");
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the page loads, open the modal
+  window.onload = function() {
+    modal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+
+    class Node {
+  constructor(value) {
+    this.value = value;
+    this.left = null;
+    this.right = null;
+    this.height = 1;
+  }
+}
+
+class AVLTree {
+  constructor() {
+    this.root = null;
+  }
+
+  insert(value) {
+    this.root = this._insertRec(this.root, value);
+  }
+
+  _insertRec(node, value) {
+    if (node === null) {
+      return new Node(value);
+    }
+
+    if (value < node.value) {
+      node.left = this._insertRec(node.left, value);
+    } else if (value > node.value) {
+      node.right = this._insertRec(node.right, value);
+    } else {
+      return node; // Duplicate values not allowed
+    }
+
+    node.height = 1 + Math.max(this._getHeight(node.left), this._getHeight(node.right));
+
+    const balance = this._getBalance(node);
+
+    // Left Left Case
+    if (balance > 1 && value < node.left.value) {
+      return this._rotateRight(node);
+    }
+
+    // Right Right Case
+    if (balance < -1 && value > node.right.value) {
+      return this._rotateLeft(node);
+    }
+
+    // Left Right Case
+    if (balance > 1 && value > node.left.value) {
+      node.left = this._rotateLeft(node.left);
+      return this._rotateRight(node);
+    }
+
+    // Right Left Case
+    if (balance < -1 && value < node.right.value) {
+      node.right = this._rotateRight(node.right);
+      return this._rotateLeft(node);
+    }
+
+    return node;
+  }
+
+  _getHeight(node) {
+    return node ? node.height : 0;
+  }
+
+  _getBalance(node) {
+    return node ? this._getHeight(node.left) - this._getHeight(node.right) : 0;
+  }
+
+  _rotateRight(y) {
+    const x = y.left;
+    const T2 = x.right;
+
+    x.right = y;
+    y.left = T2;
+
+    y.height = 1 + Math.max(this._getHeight(y.left), this._getHeight(y.right));
+    x.height = 1 + Math.max(this._getHeight(x.left), this._getHeight(x.right));
+
+    return x;
+  }
+
+  _rotateLeft(x) {
+    const y = x.right;
+    const T2 = y.left;
+
+    y.left = x;
+    x.right = T2;
+
+    x.height = 1 + Math.max(this._getHeight(x.left), this._getHeight(x.right));
+    y.height = 1 + Math.max(this._getHeight(y.left), this._getHeight(y.right));
+
+    return y;
+  }
+
+  _drawNode(node, x, y, width, height) {
+    const ctx = this.ctx;
+    ctx.beginPath();
+    ctx.arc(x, y, width / 2, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fillText(node.value, x, y + 5);
+  }
+
+  _drawTreeRec(node, x, y, width, height, level) {
+    if (node !== null) {
+      this._drawNode(node, x, y, width, height);
+      const dx = 100 / Math.pow(2, level);
+      if (node.left) {
+        this._drawTreeRec(node.left, x - dx, y + 50, width, height, level + 1);
+        this.ctx.moveTo(x, y + height / 2);
+        this.ctx.lineTo(x - dx, y + 50 - height / 2);
+        this.ctx.stroke();
+      }
+      if (node.right) {
+        this._drawTreeRec(node.right, x + dx, y + 50, width, height, level + 1);
+        this.ctx.moveTo(x, y + height / 2);
+        this.ctx.lineTo(x + dx, y + 50 - height / 2);
+        this.ctx.stroke();
+      }
+    }
+  }
+
+  drawTree() {
+    const canvas = document.getElementById('canvas');
+    this.ctx = canvas.getContext('2d');
+    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    this.ctx.font = '10px Arial';
+    this.ctx.textAlign = 'center';
+    this._drawTreeRec(this.root, canvas.width / 2, 50, 20, 20, 1);
+  }
+}
+
+const avlTree = new AVLTree();
+
+function insertNode() {
+  const value = parseInt(document.getElementById('nodeValue').value);
+  if (!isNaN(value)) {
+    avlTree.insert(value);
+    avlTree.drawTree();
+  }
+}
+
+function reset() {
+  avlTree.root = null;
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+</script>
+</body>
+</html>

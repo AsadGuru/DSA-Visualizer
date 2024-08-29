@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search Algorithms</title>
+<link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Poppins, sans-serif;
+}
+
+.screen {
+  width: 90%;
+  max-width: 800px;
+  margin: 5vh auto 0 auto;
+  box-shadow: -10px -10px 30px 4px rgba(0,0,0,0.1),
+              10px 10px 30px 4px rgba(45,78,255,0.15);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.searchOptions {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f6f6f6;
+}
+
+.timeB {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px;
+  border: 2px solid #8a4af3;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1em;
+  cursor: pointer;
+  color: #000;
+}
+.timeB:hover{
+  background-color: #16176b;
+  color:#fff;
+}
+
+.panel {
+  width: 90%;
+  max-width: 600px;
+  margin: 3vh auto;
+}
+
+.searchInfo {
+  width: 100%;
+  padding: 10px;
+  background-color: #f44e03;
+  color: #ffffff;
+  font-size: 1em;
+  border-radius: 10px;
+  margin-bottom: 2vh;
+}
+
+input {
+  width: calc(100% - 20px);
+  height: 40px;
+  border: none;
+  margin-left: 10px;
+  padding: 5px;
+  font-size: 1em;
+}
+
+.createBtn, .searchBtn {
+  width: calc(50% - 10px);
+  height: 40px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.createBtn {
+  background-color: #1ee9a4;
+  color: #fff;
+}
+.createBtn:hover{
+  background-color: #e91e63;
+}
+
+.searchBtn {
+  background-color: #e91e63;
+  color: #fff;
+}
+.searchBtn:hover{
+  background-color: #1ee9a4;
+}
+
+.item {
+  width: 6vw;
+  height: 6vw;
+  border: 0.2vw solid white;
+  color: white;
+  background-color:  #03a9f4;
+  float: left;
+  text-align: center;
+  margin: 2px;
+}
+
+@media screen and (max-width: 600px) {
+  .item {
+    width: 10vw;
+    height: 10vw;
+  }
+}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="searchOptions">
+    <div class="timeB slow">SLOW</div>
+    <div class="timeB med">MED</div>
+    <div class="timeB fast">FAST</div>
+  </div>
+  <div class="mainScreen">
+    <!-- Items will be generated here -->
+  </div>
+  <div class="panel">
+    <div class="searchInfo">
+      <p class="lol ll">Enter the number to be searched:<input type="number" class="ll" required aria-label="."></p>
+    </div>
+    <button class="createBtn">CREATE</button>
+    <button class="searchBtn">SEARCH</button>
+  </div>
+</div>
+
+<script>
+var mainScreen = document.querySelector(".mainScreen");
+var createBtn = document.querySelector(".createBtn");
+var searchBtn = document.querySelector(".searchBtn");
+var speed = 100;
+
+var inp = document.querySelector("input");
+var len = 0;
+
+createBtn.addEventListener("click", function () {
+  len = 50; // Change this value to the desired number of items
+  mainScreen.innerHTML = '';
+  for (var i = 1; i <= len; i++) {
+    var newItem = document.createElement("div");
+    newItem.classList.add("item");
+    newItem.textContent = Math.floor(Math.random() * 100);
+    mainScreen.appendChild(newItem);
+  }
+});
+
+var slowBtn = document.querySelector(".slow");
+var medBtn = document.querySelector(".med");
+var fastBtn = document.querySelector(".fast");
+
+slowBtn.addEventListener("click", function() {
+  speed = 100;
+  slowBtn.classList.add("clicked");
+  medBtn.classList.remove("clicked");
+  fastBtn.classList.remove("clicked");
+});
+
+medBtn.addEventListener("click", function() {
+  speed = 50;
+  medBtn.classList.add("clicked");
+  fastBtn.classList.remove("clicked");
+  slowBtn.classList.remove("clicked");
+});
+
+fastBtn.addEventListener("click", function() {
+  speed = 10;
+  fastBtn.classList.add("clicked");
+  medBtn.classList.remove("clicked");
+  slowBtn.classList.remove("clicked");
+});
+
+function addFocusN(elem) {
+  elem.style.backgroundColor = "#f44e03";
+}
+
+function addFocusP(elem) {
+  elem.style.backgroundColor = "#07ff45";
+}
+
+searchBtn.addEventListener("click", function() {
+  var toFind = inp.value;
+  var items = document.querySelectorAll(".item");
+  len = items.length;
+  var i = 0;
+  setInterval(function() {
+    if (i < len) {
+      if (Number(items[i].textContent) == toFind) {
+        addFocusP(items[i]);
+      } else {
+        addFocusN(items[i]);
+      }
+      i++;
+    } else {
+      clearInterval();
+    }
+  }, speed);
+});
+</script>
+</body>
+</html>

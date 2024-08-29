@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red-Black Tree Visualization</title>
+<style>
+  body {
+    font-family: Monotype corsiva;
+    text-align: center;
+    background-color: burlywood;
+  }
+  .tree {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  canvas {
+    border: 1px solid black;
+  }
+  button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 10px;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+</style>
+</head>
+<body>
+<h1>Red-Black Tree Visualization</h1>
+<div>
+  <button onclick="insertElement()">Insert Element</button>
+  <button onclick="deleteElement()">Delete Element</button>
+</div>
+<div class="tree" id="tree"></div>
+
+<script>
+  class Node {
+    constructor(value, color) {
+      this.value = value;
+      this.color = color;
+      this.left = null;
+      this.right = null;
+      this.parent = null;
+    }
+  }
+
+  class RedBlackTree {
+    constructor() {
+      this.root = null;
+    }
+
+    insert(value) {
+      const newNode = new Node(value, "red");
+      if (!this.root) {
+        this.root = newNode;
+        this.root.color = "black";
+        return;
+      }
+      let current = this.root;
+      while (current) {
+        if (value < current.value) {
+          if (!current.left) {
+            current.left = newNode;
+            newNode.parent = current;
+            break;
+          }
+          current = current.left;
+        } else if (value > current.value) {
+          if (!current.right) {
+            current.right = newNode;
+            newNode.parent = current;
+            break;
+          }
+          current = current.right;
+        } else {
+          // If value already exists in the tree, do nothing
+          return;
+        }
+      }
+      this.fixRedRedViolation(newNode);
+    }
+
+    fixRedRedViolation(node) {
+      while (node !== this.root && node.parent.color === "red") {
+        let parent = node.parent;
+        let grandparent = parent.parent;
+        if (parent === grandparent.left) {
+          let uncle = grandparent.right;
+          if (uncle && uncle.color === "red") {
+            grandparent.color = "red";
+            parent.color = "black";
+            uncle.color = "black";
+            node = grandparent;
+          } else {
+            if (node === parent.right) {
+              this.rotateLeft(parent);
+              node = parent;
+              parent = node.parent;
+            }
+            this.rotateRight(grandparent);
+            [parent.color, grandparent.color] = [grandparent.color, parent.color];
+            node = parent;
+          }
+        } else {
+          let uncle = grandparent.left;
+          if (uncle && uncle.color === "red") {
+            grandparent.color = "red";
+            parent.color = "black";
+            uncle.color = "black";
+            node = grandparent;
+          } else {
+            if (node === parent.left) {
+              this.rotateRight(parent);
+              node = parent;
+              parent = node.parent;
+            }
+            this.rotateLeft(grandparent);
+            [parent.color, grandparent.color] = [grandparent.color, parent.color];
+            node = parent;
+          }
+        }
+      }
+      this.root.color = "black";
+    }
+
+    rotateLeft(node) {
+      let rightChild = node.right;
+      node.right = rightChild.left;
+      if (rightChild.left) {
+        rightChild.left.parent = node;
+      }
+      rightChild.parent = node.parent;
+      if (!node.parent) {
+        this.root = rightChild;
+      } else if (node === node.parent.left) {
+        node.parent.left = rightChild;
+      } else {
+        node.parent.right = rightChild;
+      }
+      rightChild.left = node;
+      node.parent = rightChild;
+    }
+
+    rotateRight(node) {
+      let leftChild = node.left;
+      node.left = leftChild.right;
+      if (leftChild.right) {
+        leftChild.right.parent = node;
+      }
+      leftChild.parent = node.parent;
+      if (!node.parent) {
+        this.root = leftChild;
+      } else if (node === node.parent.right) {
+        node.parent.right = leftChild;
+      } else {
+        node.parent.left = leftChild;
+      }
+      leftChild.right = node;
+      node.parent = leftChild;
+    }
+
+    // For demonstration purposes, in a real implementation, deletion would be more complex
+    delete(value) {
+      if (!this.root) return;
+      let current = this.root;
+      while (current) {
+        if (value === current.value) {
+          if (!current.left && !current.right) {
+            if (current === this.root) {
+              this.root = null;
+              return;
+            }
+            let sibling = current === current.parent.left ? current.parent.right : current.parent.left;
+            if (sibling && sibling.color === "red") {
+              sibling.color = "black";
+              return;
+            }
+            current = current.parent;
+          } else if (current.left && current.right) {
+            let successor = this.findSuccessor(current);
+            current.value = successor.value;
+            current = successor;
+          } else {
+            let child = current.left || current.right;
+            current.value = child.value;
+            current.left = null;
+            current.right = null;
+            return;
+          }
+        } else if (value < current.value) {
+          current = current.left;
+        } else {
+          current = current.right;
+        }
+      }
+    }
+
+    findSuccessor(node) {
+      let current = node.right;
+      while (current.left) {
+        current = current.left;
+      }
+      return current;
+    }
+  }
+
+  const tree = new RedBlackTree();
+  const canvas = document.createElement('canvas');
+  canvas.width = 1000;
+  canvas.height = 600;
+  const ctx = canvas.getContext('2d');
+  document.getElementById('tree').appendChild(canvas);
+
+  // Function to generate a random array of limited numbers and create a Red-Black Tree
+  function generateRandomArray() {
+    tree.root = null; // Clear previous tree
+    const randomArray = [];
+    const limit = 10;
+    for (let i = 0; i < limit; i++) {
+      randomArray.push(Math.floor(Math.random() * 100) + 1);
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    randomArray.forEach(value => {
+      tree.insert(value);
+    });
+    visualizeTree();
+  }
+
+  // Function to visualize the Red-Black Tree
+  function visualizeTree() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const startX = canvas.width / 2;
+    const startY = 50;
+    if (tree.root) {
+      drawNode(tree.root, startX, startY, startX, 0);
+    }
+  }
+
+  // Function to draw a node and its children recursively
+  function drawNode(node, x, y, parentX, level) {
+    const radius = 20;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = node.color === 'red' ? 'red' : 'black';
+    ctx.fill();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText(node.value, x, y + 5);
+
+    if (node.left) {
+      const childX = parentX - (400 / Math.pow(2, level + 1));
+      const childY = y + 80;
+      drawLine(x, y, childX, childY);
+      drawNode(node.left, childX, childY, x, level + 1);
+    }
+    if (node.right) {
+      const childX = parentX + (400 / Math.pow(2, level + 1));
+      const childY = y + 80;
+      drawLine(x, y, childX, childY);
+      drawNode(node.right, childX, childY, x, level + 1);
+    }
+  }
+
+  // Function to draw a line between two points
+  function drawLine(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1 + 20);
+    ctx.lineTo(x2, y2 - 20);
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Function to insert an element into the Red-Black Tree
+  function insertElement() {
+    const value = parseInt(prompt('Enter value to insert:'));
+    if (!isNaN(value)) {
+      tree.insert(value);
+      visualizeTree();
+    }
+  }
+
+  // Function to delete an element from the Red-Black Tree
+  function deleteElement() {
+    const value = parseInt(prompt('Enter value to delete:'));
+    if (!isNaN(value)) {
+      tree.delete(value);
+      visualizeTree();
+    }
+  }
+</script>
+</body>
+</html>

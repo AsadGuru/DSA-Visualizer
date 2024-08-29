@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Insertion Sort</title>
+    </head>
+    <body><div id="div" >
+        <p id="p"><b>Insertion Sort</b> is a simple sorting algorithm that works the way we sort playing cards in our hands. We sort the first two cards and then place the third card in the appropriate position within the first two, and then the fourth is positioned within the first three, and so on until the whole hand is sorted.During an iteration, an element of the list is inserted into the sorted portion of the array to its <b>left</b>. So, basically, for each iteration, we have an array of sorted elements to the <b>left</b>, and an array of other elements still to be sorted to the <b>right</b>.
+Sounds confusing? Let's look at an example to better understand the algorithm.
+<br/><br/>Take the following array: [3, 1, 5, 2]
+<br /><b>Step 1:</b> We start with the second element (<b>1</b>) and properly position it in the "array" of the first two elements.<br /><b>Result:</b> [<b>1</b>, 3, 5, 2] - now we have a sorted array to the left ([<b>1, 3</b>]), and the other elements to the right. <br /><br/><b>Step 2:</b> The next element is <b>5</b>. Inserting it into the array to the left results in [1, 3, <b>5</b>, 2].
+<br/><br/><b>Step 3:</b> The last element (<b>2</b>) is inserted into the corresponding position, resulting in: [1, <b>2</b>, 3, 5]<br /><br />Press <strong>Continue</strong>
+to see <strong>Insertion Sort Visualized.</strong>
+</p>
+    </div>
+    <script>window.onload = function createbutton()
+        {
+            div = document.getElementById("div");
+            btn = document.createElement("button");
+            btn.innerHTML = "Continue";
+            btn.setAttribute("onclick","start()");
+            div.appendChild(btn);
+            
+        }
+        function start()
+        {
+            p = document.getElementById("p");
+            div.removeChild(p);
+            div.removeChild(btn);
+            label1 = document.createElement("label");
+            p1 = document.createTextNode("Select number of elements: ");
+            list = document.createElement("SELECT");
+            list.options[list.options.length] = new Option("","0")
+            for(let i=4;i<21;i++)
+            {
+                list.options[list.options.length] = new Option(i,i);
+            }
+            label1.appendChild(p1);
+            label1.appendChild(list);
+            div.appendChild(label1);
+            list.setAttribute("onchange","order()");
+        }
+        function order()
+        {
+            list.removeAttribute("onchange");
+            label2 = document.createElement("label");
+            p2 = document.createTextNode("Arrange the elements in: ");
+            p3 = document.createTextNode("Ascending order");
+            p4 = document.createTextNode("Descending order");
+            br = document.createElement("br");
+            radio = new Array(2);
+            for(let i=0;i<2;i++)
+            {
+                radio[i] = document.createElement("input");
+                radio[i].setAttribute("type","radio");
+                radio[i].setAttribute("onclick","input()");
+                radio[i].name = "order";
+            }
+            label2.appendChild(br);
+            label2.appendChild(p2);
+            label2.appendChild(radio[0]);
+            label2.appendChild(p3);
+            label2.appendChild(radio[1]);
+            label2.appendChild(p4);
+            div.appendChild(label2);
+        }
+        function input()
+        {
+            div.removeChild(label2);
+            div.removeChild(label1);
+            label3 = document.createElement("label");
+            n = parseInt(list.value);
+            p1.innerHTML += "Enter the numbers: ";
+            label3.appendChild(p1);
+            inp = new Array(n);
+            a = new Array(n)
+            for(let i=0;i<n;i++)
+            {
+                inp[i] = document.createElement("input");
+                inp[i].value = Math.floor(Math.random()*100);
+                inp[i].setAttribute("style","width:40px;margin-right:10px;border-color:red;text-align:center");
+                a[i] = parseInt(inp[i].value);
+                label3.appendChild(inp[i]);
+            }
+            btn.innerHTML = "Start"
+            btn.setAttribute("onclick","createtable()")
+            label3.appendChild(btn);
+            div.appendChild(label3);
+        }
+        var timer;
+        function createtable()
+        {
+            for(let i=0;i<n;i++)
+            {
+                if(isNaN(inp[i].value))
+                {
+                    alert(inp[i].value+" is not a number!! Please check!");
+                    return;
+                }
+            }
+            tbl = document.createElement("table");
+            tbl.setAttribute("style","margin-right:auto;margin-left:auto;margin-top:30px;border-spacing:5px;text-align:center");
+            tr = new Array(2);
+            td = new Array(2*n);
+            for(let i=0;i<2;i++)
+            {
+                tr[i] = document.createElement ("tr");
+                for(let j=0;j<n;j++)
+                {
+                    td[i*n+j] = document.createElement("td");
+                    td[i*n+j].setAttribute("style","width:30px;height:30px");
+                    if(i==1)
+                    {
+                        td[n+j].innerHTML = inp[j].value;
+                        td[n+j].style.border = "thin solid";
+                    }
+                    tr[i].appendChild(td[i*n+j]);
+                }
+                tbl.appendChild(tr[i]);
+            }
+           div.appendChild(tbl);
+           pg = document.createElement("progress")
+           p2 = document.createTextNode("Progress:");
+           pg.value = '0';
+           pg.max = '100';
+           div.appendChild(p2);
+           div.appendChild(pg);
+           btn.removeAttribute("onclick");
+            i=1;
+            timer=setTimeout(function()
+            {
+                td[n].setAttribute("bgcolor","orange");
+                timer=setTimeout(pick,1000);
+            },1000);
+        }
+        
+        var i,j;
+        var temp;
+        
+        function pick()
+        {
+            if(i<n)
+            {
+                td[i+n].setAttribute("bgcolor","lightgreen");
+                timer=setTimeout(function()
+                {
+                    td[i].innerHTML=td[i+n].innerHTML;
+                    td[i+n].innerHTML="";
+                    td[i+n].removeAttribute("bgcolor");
+                    td[i].setAttribute("bgcolor","lightgreen");
+                    temp=a[i];
+                    j=i;
+                    timer=setTimeout(function()
+                    {
+                        timer=setInterval(shift,750);
+                    },500);
+                },500);
+            }
+            else
+            {
+                alert("Sorting has been Completed😊!!");
+                div.appendChild(br);
+                div.appendChild(p2);
+            }
+        }
+        
+        function shift(){
+            if(radio[0].checked&&temp<a[j-1])
+            {
+                a[j]=a[j-1];
+                td[j-1].innerHTML=td[j].innerHTML;
+                td[j-1].setAttribute("bgcolor","lightgreen");
+                td[j].innerHTML="";
+                td[j].removeAttribute("bgcolor");
+                td[j+n].innerHTML=a[j];
+                td[j+n].setAttribute("bgcolor","orange");
+                td[j+n-1].innerHTML="";
+                td[j+n-1].removeAttribute("bgcolor");
+                j--;
+            }
+            else if(radio[1].checked&&temp>a[j-1])
+            {
+                a[j] = a[j-1];
+                td[j-1].innerHTML=td[j].innerHTML;
+                td[j-1].setAttribute("bgcolor","lightgreen");
+                td[j].innerHTML="";
+                td[j].removeAttribute("bgcolor");
+                td[j+n].innerHTML=a[j];
+                td[j+n].setAttribute("bgcolor","orange");
+                td[j+n-1].innerHTML="";
+                td[j+n-1].removeAttribute("bgcolor");
+                j--;
+            }
+            else
+            {
+                clearInterval(timer);
+                a[j]=temp;
+                td[j+n].innerHTML=td[j].innerHTML;
+                td[j+n].setAttribute("bgcolor","orange");
+                td[j].innerHTML="";
+                td[j].removeAttribute("bgcolor");
+                i++;
+                pg.value += 100/(n-1);
+                timer=setTimeout(pick,1000);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+body{
+    background-color: #000000;
+}
+div{
+    position: absolute;
+    top: 82%;
+    width: 100%;
+}
+
+button{
+    height: 25px;
+    width: 31%;
+    border-radius: 5px;
+}
+
+table{
+    position: absolute;
+    width: 100%;
+    height: 80%;
+}
+
+td{
+    width: 11.111%;
+    height: 11.111%;
+    text-align: center;
+}
+
+span{
+    white-space: nowrap;
+    color: #FFFFFF;
+}
+
+.Start{
+    background-color: #90EE90;
+}
+
+.Stop{
+    background-color: #C4FF4D;
+}
+
+.Road{
+    background-color: #CCD3DD;
+}
+
+.Wall{
+    background-color: #325482;
+}
+
+.Path{
+    background-color: #CC0000;
+}
